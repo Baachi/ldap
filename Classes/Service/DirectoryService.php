@@ -133,6 +133,7 @@ class DirectoryService
             sprintf($this->options['filter']['account'], $this->bindProvider->filterUsername($username))
         );
 
+
         if (!$searchResult) {
             throw new Exception('Error during Ldap user search: ' . ldap_errno($this->bindProvider->getLinkIdentifier()), 1443798372);
         }
@@ -142,7 +143,11 @@ class DirectoryService
             throw new Exception('Error while authenticating: authenticated user could not be fetched from the directory', 1488289104);
         }
 
-        return $entries[0];
+        $entry = $entries[0];
+
+        $this->bindProvider->verifyCredentials($entry['dn'], $password);
+
+        return $entry;
     }
 
     /**
